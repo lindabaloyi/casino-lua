@@ -16,7 +16,7 @@ function HomeScreen:update(dt, gameState, mouseX, mouseY)
 end
 
 function HomeScreen:draw(gameState, mouseX, mouseY)
-    love.graphics.setBackgroundColor(26/255, 26/255, 46/255)
+    love.graphics.setBackgroundColor(46/255, 125/255, 50/255)
     love.graphics.clear()
     
     love.graphics.setColor(218/255, 165/255, 32/255, 255)
