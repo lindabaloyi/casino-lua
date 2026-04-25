@@ -4,8 +4,8 @@ return {
     console = false,
     window = {
         title = "Casino",
-        width = 640,
-        height = 360,
+        width = 896,
+        height = 414,
         resizable = false,
         fullscreen = false
     },

@@ -3,7 +3,7 @@ local screenManager = nil
 
 function love.load()
     love.window.setTitle("Casino")
-    love.window.setMode(640, 360, { resizable = false, fullscreen = false })
+    love.window.setMode(896, 414, { resizable = false, fullscreen = false })
     math.randomseed(os.time())
     
     screenManager = ScreenManager:new()
