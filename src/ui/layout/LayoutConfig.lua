@@ -12,8 +12,5 @@ LayoutConfig.TABLE_CARD_SPACING = 10
 LayoutConfig.CAPTURE_PILE_Y = 180
 LayoutConfig.CAPTURE_PILE_LEFT_X = 10
 LayoutConfig.CAPTURE_PILE_RIGHT_X = 780
-LayoutConfig.CAPTURE_CARD_OFFSET_X = 12
-LayoutConfig.CAPTURE_CARD_SCALE = 0.5
-LayoutConfig.CAPTURE_PILE_MAX_SHOWN = 8
 
 return LayoutConfig

@@ -1,74 +1,228 @@
-15:34:53 Game loaded
-15:34:57 [HIT] Card:4
-15:34:57 [Collision] draggedPos: 345,199
-15:34:57 [Collision] result: nil -> nil
-15:34:57 [Trail] Card trailed
-15:34:58 [HIT] Card:1
-15:34:59 [Collision] draggedPos: 413,82
-15:34:59 [Collision] result: looseCard -> table: 0x0159e189ec78
-15:34:59 [CreateTemp] ===========================================
-15:34:59 [CreateTemp] Creating temp stack...
-15:34:59 [CreateTemp] Player ID: 0
-15:34:59 [CreateTemp] Source: hand
-15:34:59 [CreateTemp] --- Cards Being Combined ---
-15:34:59 [CreateTemp] Card from hand: 1S (value: 1)
-15:34:59 [CreateTemp] Target on table: 4C (value: 4)
-15:34:59 [CreateTemp] Bottom card (higher): 4C
-15:34:59 [CreateTemp] Top card (lower): 1S
-15:34:59 [CreateTemp] --- Temp Stack Created ---
-15:34:59 [CreateTemp] Stack type: temp_stack
-15:34:59 [CreateTemp] Owner (player ID): 0
-15:34:59 [CreateTemp] Build value: 5
-15:34:59 [CreateTemp] Cards in stack:
-15:34:59 [CreateTemp]   [1] Bottom: 4C (value: 4, source: hand)
-15:34:59 [CreateTemp]   [2] Top: 1S (value: 1, source: table)
-15:34:59 [CreateTemp] ===========================================
-15:34:59 [CreateTemp] Temp stack created with value 5
-15:35:00 [AcceptTemp] Clicked Accept button for stack at index: 1
-15:35:00 [AcceptTemp] ===========================================
-15:35:00 [AcceptTemp] Attempting to accept temp stack at index: 1
-15:35:00 [AcceptTemp] Player ID: 0
-15:35:00 [AcceptTemp] --- Build Info ---
-15:35:00 [AcceptTemp] Stack value: 5
-15:35:00 [AcceptTemp] Stack owner: 0
-15:35:00 [AcceptTemp] Stack source: hand
-15:35:00 [AcceptTemp] Cards in build:
-15:35:00 [AcceptTemp]   [1] 4C (value: 4, source: hand)
-15:35:00 [AcceptTemp]   [2] 1S (value: 1, source: table)
-15:35:00 [AcceptTemp] Sum of card values: 5
-15:35:00 [AcceptTemp] --- Validation ---
-15:35:00 [AcceptTemp] Has hand card: true
-15:35:00 [AcceptTemp] Player hand size: 8
-15:35:00 [AcceptTemp] Validation: PASSED
-15:35:00 [AcceptTemp] --- Build Accepted ---
-15:35:00 [AcceptTemp] Build type: temp_stack -> build_stack
-15:35:00 [AcceptTemp] Build value: 5
-15:35:00 [AcceptTemp] Cards now in build:
-15:35:00 [AcceptTemp]   [1] 4C (value: 4)
-15:35:00 [AcceptTemp]   [2] 1S (value: 1)
-15:35:00 [AcceptTemp] ===========================================
-15:35:00 [AcceptTemp] Success: Build accepted with value 5
-15:35:02 [HIT] Card:4
-15:35:03 [Collision] draggedPos: 427,51
-15:35:03 [Collision] result: buildStack -> table: 0x0159e0127868
-15:35:03 [captureOwn] ===========================================
-15:35:03 [captureOwn] Attempting to capture own build...
-15:35:03 [captureOwn] Player ID: 0
-15:35:03 [captureOwn] --- Card Being Played ---
-15:35:03 [captureOwn] Card: 5D (value: 5)
-15:35:03 [captureOwn] --- Target Build Info ---
-15:35:03 [captureOwn] Stack type: build_stack
-15:35:03 [captureOwn] Stack value: 5
-15:35:03 [captureOwn] Stack owner: 0
-15:35:03 [captureOwn] Cards in target build:
-15:35:03 [captureOwn]   [1] 4C (value: 4)
-15:35:03 [captureOwn]   [2] 1S (value: 1)
-15:35:03 [captureOwn] --- Validation ---
-15:35:03 [captureOwn] Build value: 5
-15:35:03 [captureOwn] Playing card value: 5
-15:35:03 [captureOwn] Validation result: true
-15:35:03 [captureOwn] --- Build Captured ---
-15:35:03 [captureOwn] Cards captured: 3
-15:35:03 [captureOwn] Player captures now: 3
-15:35:03 [captureOwn] ===========================================
-15:35:03 [captureOwn] Captured build with value 5
+17:50:36 Game loaded
+17:50:43 [HIT] Card:4
+17:50:45 [Collision] draggedPos: 386,129
+17:50:45 [Collision] result: nil -> nil
+17:50:45 [Trail] Card trailed
+17:50:46 [HIT] Card:6
+17:50:48 [Collision] draggedPos: 545,108
+17:50:48 [Collision] result: nil -> nil
+17:50:48 [Trail] Card trailed
+17:50:51 [HIT] TableCard:1
+17:50:52 [TableCard] draggedPos: 442,49
+17:50:52 [TableCard] result: looseCard -> table: 0x01c4a44af3a0
+17:50:52 [CreateTemp] ===========================================
+17:50:52 [CreateTemp] Creating temp stack...
+17:50:52 [CreateTemp] Player ID: 0
+17:50:52 [CreateTemp] Source: table
+17:50:52 [CreateTemp] --- Cards Being Combined ---
+17:50:52 [CreateTemp] Card from table: 4D (value: 4)
+17:50:52 [CreateTemp] Target on table: 6D (value: 6)
+17:50:52 [CreateTemp] Bottom card (higher): 6D
+17:50:52 [CreateTemp] Top card (lower): 4D
+17:50:52 [CreateTemp] --- Temp Stack Created ---
+17:50:52 [CreateTemp] Stack type: temp_stack
+17:50:52 [CreateTemp] Owner (player ID): 0
+17:50:52 [CreateTemp] Build value: 10
+17:50:52 [CreateTemp] Cards in stack:
+17:50:52 [CreateTemp]   [1] Bottom: 6D (value: 6, source: table)
+17:50:52 [CreateTemp]   [2] Top: 4D (value: 4, source: hand)
+17:50:52 [CreateTemp] ===========================================
+17:50:52 [CreateTemp] Temp stack created with value 10
+17:50:54 [AcceptTemp] Clicked Accept button for stack at index: 1
+17:50:54 [AcceptTemp] ===========================================
+17:50:54 [AcceptTemp] Attempting to accept temp stack at index: 1
+17:50:54 [AcceptTemp] Player ID: 0
+17:50:54 [AcceptTemp] --- Build Info ---
+17:50:54 [AcceptTemp] Stack value: 10
+17:50:54 [AcceptTemp] Stack owner: 0
+17:50:54 [AcceptTemp] Stack source: table
+17:50:54 [AcceptTemp] Cards in build:
+17:50:54 [AcceptTemp]   [1] 6D (value: 6, source: table)
+17:50:54 [AcceptTemp]   [2] 4D (value: 4, source: hand)
+17:50:54 [AcceptTemp] Sum of card values: 10
+17:50:54 [AcceptTemp] --- Validation ---
+17:50:54 [AcceptTemp] Has hand card: true
+17:50:54 [AcceptTemp] Player hand size: 8
+17:50:54 [AcceptTemp] Validation: PASSED
+17:50:54 [AcceptTemp] --- Build Accepted ---
+17:50:54 [AcceptTemp] Build type: temp_stack -> build_stack
+17:50:54 [AcceptTemp] Build value: 10
+17:50:54 [AcceptTemp] Cards now in build:
+17:50:54 [AcceptTemp]   [1] 6D (value: 6)
+17:50:54 [AcceptTemp]   [2] 4D (value: 4)
+17:50:54 [AcceptTemp] ===========================================
+17:50:54 [AcceptTemp] Success: Build accepted with value 10
+17:50:56 [HIT] Card:8
+17:50:57 [Collision] draggedPos: 419,48
+17:50:57 [Collision] result: buildStack -> table: 0x01c4a2bd7f68
+17:50:57 [captureOwn] ===========================================
+17:50:57 [captureOwn] Attempting to capture own build...
+17:50:57 [captureOwn] Player ID: 0
+17:50:57 [captureOwn] --- Card Being Played ---
+17:50:57 [captureOwn] Card: 10D (value: 10)
+17:50:57 [captureOwn] --- Target Build Info ---
+17:50:57 [captureOwn] Stack type: build_stack
+17:50:57 [captureOwn] Stack value: 10
+17:50:57 [captureOwn] Stack owner: 0
+17:50:57 [captureOwn] Cards in target build:
+17:50:57 [captureOwn]   [1] 6D (value: 6)
+17:50:57 [captureOwn]   [2] 4D (value: 4)
+17:50:57 [captureOwn] --- Validation ---
+17:50:57 [captureOwn] Build value: 10
+17:50:57 [captureOwn] Playing card value: 10
+17:50:57 [captureOwn] Validation result: true
+17:50:57 [captureOwn] --- Build Captured ---
+17:50:57 [captureOwn] Cards captured: 3
+17:50:57 [captureOwn] Player captures now: 3
+17:50:57 [captureOwn] ===========================================
+17:50:57 [captureOwn] Captured build with value 10
+17:50:59 [HIT] Card:1
+17:51:00 [Collision] draggedPos: 374,156
+17:51:00 [Collision] result: nil -> nil
+17:51:00 [Trail] Card trailed
+17:51:01 [HIT] Card:1
+17:51:02 [Collision] draggedPos: 422,59
+17:51:02 [Collision] result: looseCard -> table: 0x01c4a44af030
+17:51:02 [CreateTemp] ===========================================
+17:51:02 [CreateTemp] Creating temp stack...
+17:51:02 [CreateTemp] Player ID: 0
+17:51:02 [CreateTemp] Source: hand
+17:51:02 [CreateTemp] --- Cards Being Combined ---
+17:51:02 [CreateTemp] Card from hand: 2S (value: 2)
+17:51:02 [CreateTemp] Target on table: 1D (value: 1)
+17:51:02 [CreateTemp] Bottom card (higher): 2S
+17:51:02 [CreateTemp] Top card (lower): 1D
+17:51:02 [CreateTemp] --- Temp Stack Created ---
+17:51:02 [CreateTemp] Stack type: temp_stack
+17:51:02 [CreateTemp] Owner (player ID): 0
+17:51:03 [CreateTemp] Build value: 3
+17:51:03 [CreateTemp] Cards in stack:
+17:51:03 [CreateTemp]   [1] Bottom: 2S (value: 2, source: hand)
+17:51:03 [CreateTemp]   [2] Top: 1D (value: 1, source: table)
+17:51:03 [CreateTemp] ===========================================
+17:51:03 [CreateTemp] Temp stack created with value 3
+17:51:04 [AcceptTemp] Clicked Accept button for stack at index: 1
+17:51:04 [AcceptTemp] ===========================================
+17:51:04 [AcceptTemp] Attempting to accept temp stack at index: 1
+17:51:04 [AcceptTemp] Player ID: 0
+17:51:04 [AcceptTemp] --- Build Info ---
+17:51:04 [AcceptTemp] Stack value: 3
+17:51:04 [AcceptTemp] Stack owner: 0
+17:51:04 [AcceptTemp] Stack source: hand
+17:51:04 [AcceptTemp] Cards in build:
+17:51:04 [AcceptTemp]   [1] 2S (value: 2, source: hand)
+17:51:04 [AcceptTemp]   [2] 1D (value: 1, source: table)
+17:51:04 [AcceptTemp] Sum of card values: 3
+17:51:04 [AcceptTemp] --- Validation ---
+17:51:04 [AcceptTemp] Has hand card: true
+17:51:04 [AcceptTemp] Player hand size: 5
+17:51:04 [AcceptTemp] Validation: PASSED
+17:51:04 [AcceptTemp] --- Build Accepted ---
+17:51:04 [AcceptTemp] Build type: temp_stack -> build_stack
+17:51:04 [AcceptTemp] Build value: 3
+17:51:04 [AcceptTemp] Cards now in build:
+17:51:04 [AcceptTemp]   [1] 2S (value: 2)
+17:51:04 [AcceptTemp]   [2] 1D (value: 1)
+17:51:04 [AcceptTemp] ===========================================
+17:51:04 [AcceptTemp] Success: Build accepted with value 3
+17:51:06 [HIT] Card:1
+17:51:07 [Collision] draggedPos: 428,57
+17:51:07 [Collision] result: buildStack -> table: 0x01c4a44af078
+17:51:07 [captureOwn] ===========================================
+17:51:07 [captureOwn] Attempting to capture own build...
+17:51:07 [captureOwn] Player ID: 0
+17:51:07 [captureOwn] --- Card Being Played ---
+17:51:07 [captureOwn] Card: 3C (value: 3)
+17:51:07 [captureOwn] --- Target Build Info ---
+17:51:07 [captureOwn] Stack type: build_stack
+17:51:07 [captureOwn] Stack value: 3
+17:51:07 [captureOwn] Stack owner: 0
+17:51:07 [captureOwn] Cards in target build:
+17:51:07 [captureOwn]   [1] 2S (value: 2)
+17:51:07 [captureOwn]   [2] 1D (value: 1)
+17:51:07 [captureOwn] --- Validation ---
+17:51:07 [captureOwn] Build value: 3
+17:51:07 [captureOwn] Playing card value: 3
+17:51:07 [captureOwn] Validation result: true
+17:51:07 [captureOwn] --- Build Captured ---
+17:51:07 [captureOwn] Cards captured: 3
+17:51:07 [captureOwn] Player captures now: 6
+17:51:07 [captureOwn] ===========================================
+17:51:07 [captureOwn] Captured build with value 3
+17:51:09 [HIT] Card:2
+17:51:10 [Collision] draggedPos: 422,134
+17:51:10 [Collision] result: nil -> nil
+17:51:10 [Trail] Card trailed
+17:51:10 [HIT] Card:1
+17:51:11 [Collision] draggedPos: 419,74
+17:51:11 [Collision] result: looseCard -> table: 0x01c4a44afa50
+17:51:11 [CreateTemp] ===========================================
+17:51:11 [CreateTemp] Creating temp stack...
+17:51:11 [CreateTemp] Player ID: 0
+17:51:11 [CreateTemp] Source: hand
+17:51:11 [CreateTemp] --- Cards Being Combined ---
+17:51:11 [CreateTemp] Card from hand: 4H (value: 4)
+17:51:11 [CreateTemp] Target on table: 5H (value: 5)
+17:51:11 [CreateTemp] Bottom card (higher): 5H
+17:51:11 [CreateTemp] Top card (lower): 4H
+17:51:11 [CreateTemp] --- Temp Stack Created ---
+17:51:11 [CreateTemp] Stack type: temp_stack
+17:51:11 [CreateTemp] Owner (player ID): 0
+17:51:11 [CreateTemp] Build value: 9
+17:51:11 [CreateTemp] Cards in stack:
+17:51:11 [CreateTemp]   [1] Bottom: 5H (value: 5, source: hand)
+17:51:11 [CreateTemp]   [2] Top: 4H (value: 4, source: table)
+17:51:11 [CreateTemp] ===========================================
+17:51:11 [CreateTemp] Temp stack created with value 9
+17:51:12 [AcceptTemp] Clicked Accept button for stack at index: 1
+17:51:12 [AcceptTemp] ===========================================
+17:51:12 [AcceptTemp] Attempting to accept temp stack at index: 1
+17:51:12 [AcceptTemp] Player ID: 0
+17:51:12 [AcceptTemp] --- Build Info ---
+17:51:12 [AcceptTemp] Stack value: 9
+17:51:12 [AcceptTemp] Stack owner: 0
+17:51:12 [AcceptTemp] Stack source: hand
+17:51:12 [AcceptTemp] Cards in build:
+17:51:12 [AcceptTemp]   [1] 5H (value: 5, source: hand)
+17:51:12 [AcceptTemp]   [2] 4H (value: 4, source: table)
+17:51:12 [AcceptTemp] Sum of card values: 9
+17:51:12 [AcceptTemp] --- Validation ---
+17:51:12 [AcceptTemp] Has hand card: true
+17:51:12 [AcceptTemp] Player hand size: 2
+17:51:12 [AcceptTemp] Validation: PASSED
+17:51:12 [AcceptTemp] --- Build Accepted ---
+17:51:12 [AcceptTemp] Build type: temp_stack -> build_stack
+17:51:12 [AcceptTemp] Build value: 9
+17:51:12 [AcceptTemp] Cards now in build:
+17:51:12 [AcceptTemp]   [1] 5H (value: 5)
+17:51:12 [AcceptTemp]   [2] 4H (value: 4)
+17:51:12 [AcceptTemp] ===========================================
+17:51:12 [AcceptTemp] Success: Build accepted with value 9
+17:51:14 [HIT] Card:2
+17:51:15 [Collision] draggedPos: 414,50
+17:51:15 [Collision] result: buildStack -> table: 0x01c4a44b6d00
+17:51:15 [captureOwn] ===========================================
+17:51:15 [captureOwn] Attempting to capture own build...
+17:51:15 [captureOwn] Player ID: 0
+17:51:15 [captureOwn] --- Card Being Played ---
+17:51:15 [captureOwn] Card: 9C (value: 9)
+17:51:15 [captureOwn] --- Target Build Info ---
+17:51:15 [captureOwn] Stack type: build_stack
+17:51:15 [captureOwn] Stack value: 9
+17:51:15 [captureOwn] Stack owner: 0
+17:51:15 [captureOwn] Cards in target build:
+17:51:15 [captureOwn]   [1] 5H (value: 5)
+17:51:15 [captureOwn]   [2] 4H (value: 4)
+17:51:15 [captureOwn] --- Validation ---
+17:51:15 [captureOwn] Build value: 9
+17:51:15 [captureOwn] Playing card value: 9
+17:51:15 [captureOwn] Validation result: true
+17:51:15 [captureOwn] --- Build Captured ---
+17:51:15 [captureOwn] Cards captured: 3
+17:51:15 [captureOwn] Player captures now: 9
+17:51:15 [captureOwn] ===========================================
+17:51:15 [captureOwn] Captured build with value 9
+17:51:17 [HIT] Card:1
+17:51:18 [Collision] draggedPos: 412,114
+17:51:18 [Collision] result: nil -> nil
+17:51:18 [Trail] Card trailed

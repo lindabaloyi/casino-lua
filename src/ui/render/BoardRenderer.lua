@@ -154,41 +154,26 @@ function BoardRenderer:drawFlash(flashTimer)
 end
 
 function BoardRenderer:drawCapturePiles(playerCaptures, opponentCaptures)
-    local scaledWidth = LayoutConfig.CARD_WIDTH * LayoutConfig.CAPTURE_CARD_SCALE
-    local scaledHeight = LayoutConfig.CARD_HEIGHT * LayoutConfig.CAPTURE_CARD_SCALE
+    local cardWidth = LayoutConfig.CARD_WIDTH
+    local cardHeight = LayoutConfig.CARD_HEIGHT
 
     love.graphics.setFont(love.graphics.newFont(12))
 
     if opponentCaptures and #opponentCaptures > 0 then
+        local topCard = opponentCaptures[#opponentCaptures]
         love.graphics.setColor(1, 1, 1)
         love.graphics.print("Dealer (" .. #opponentCaptures .. ")", LayoutConfig.CAPTURE_PILE_LEFT_X, LayoutConfig.CAPTURE_PILE_Y - 15)
-
-        local startX = LayoutConfig.CAPTURE_PILE_LEFT_X
-        local maxCards = math.min(#opponentCaptures, LayoutConfig.CAPTURE_PILE_MAX_SHOWN)
-
-        for i = 1, maxCards do
-            local card = opponentCaptures[i]
-            local x = startX + (i - 1) * LayoutConfig.CAPTURE_CARD_OFFSET_X
-            local y = LayoutConfig.CAPTURE_PILE_Y
-            card:draw(x, y, scaledWidth, scaledHeight)
-        end
+        topCard:draw(LayoutConfig.CAPTURE_PILE_LEFT_X, LayoutConfig.CAPTURE_PILE_Y, cardWidth, cardHeight)
     else
         love.graphics.setColor(0.5, 0.5, 0.5)
         love.graphics.print("Dealer (0)", LayoutConfig.CAPTURE_PILE_LEFT_X, LayoutConfig.CAPTURE_PILE_Y - 15)
     end
 
     if playerCaptures and #playerCaptures > 0 then
+        local topCard = playerCaptures[#playerCaptures]
         love.graphics.setColor(1, 1, 1)
         love.graphics.print("You (" .. #playerCaptures .. ")", LayoutConfig.CAPTURE_PILE_RIGHT_X, LayoutConfig.CAPTURE_PILE_Y - 15)
-
-        local maxCards = math.min(#playerCaptures, LayoutConfig.CAPTURE_PILE_MAX_SHOWN)
-
-        for i = 1, maxCards do
-            local card = playerCaptures[i]
-            local x = LayoutConfig.CAPTURE_PILE_RIGHT_X + (i - 1) * LayoutConfig.CAPTURE_CARD_OFFSET_X
-            local y = LayoutConfig.CAPTURE_PILE_Y
-            card:draw(x, y, scaledWidth, scaledHeight)
-        end
+        topCard:draw(LayoutConfig.CAPTURE_PILE_RIGHT_X, LayoutConfig.CAPTURE_PILE_Y, cardWidth, cardHeight)
     else
         love.graphics.setColor(0.5, 0.5, 0.5)
         love.graphics.print("You (0)", LayoutConfig.CAPTURE_PILE_RIGHT_X, LayoutConfig.CAPTURE_PILE_Y - 15)
