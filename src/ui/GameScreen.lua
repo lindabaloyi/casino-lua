@@ -69,10 +69,6 @@ function GameScreen:draw(gameState, mouseX, mouseY)
 end
 
 function GameScreen:mousepressed(x, y, button, sm)
-    log("[mousepressed] " .. x .. "," .. y)
-    log("Square bounds:" .. self.square.x .. "," .. self.square.y)
-    log("Mouse in square?" .. tostring(x >= self.square.x and x <= self.square.x + self.square.size and y >= self.square.y and y <= self.square.y + self.square.size))
-    
     self.flashTimer = 0.3
     
     if x >= self.square.x and x <= self.square.x + self.square.size and
@@ -111,26 +107,11 @@ function GameScreen:mousepressed(x, y, button, sm)
 end
 
 function GameScreen:mousedragged(x, y, dx, dy)
-    log("[mousedragged] " .. x .. "," .. y .. " isDragging:" .. tostring(self.isDragging) .. " draggingIndex:" .. tostring(self.draggingIndex))
-    
-    -- Move card if dragging
-    if self.isDragging and self.draggingIndex then
-        self.cardPositions[self.draggingIndex] = {
-            x = x - self.dragOffsetX,
-            y = y - self.dragOffsetY
-        }
-    end
-
-    -- Move square if dragging
-    if self.squareDragging then
-        self.square.x = x - self.squareOffsetX
-        self.square.y = y - self.squareOffsetY
-    end
+    -- Handled in update() via love.mouse.getPosition()
 end
 
 function GameScreen:mousereleased(x, y, button, sm)
     log("[mousereleased]")
-    self.flashTimer = 0.1
     
     -- Snap card back to default position in hand
     if self.draggingIndex then
@@ -145,19 +126,7 @@ function GameScreen:mousereleased(x, y, button, sm)
 end
 
 function GameScreen:mousemove(x, y)
-    log("[mousemove] " .. x .. "," .. y .. " isDragging:" .. tostring(self.isDragging))
-    
-    if self.isDragging and self.draggingIndex then
-        self.cardPositions[self.draggingIndex] = {
-            x = x - self.dragOffsetX,
-            y = y - self.dragOffsetY
-        }
-    end
-    
-    if self.squareDragging then
-        self.square.x = x - self.squareOffsetX
-        self.square.y = y - self.squareOffsetY
-    end
+    -- Handled in update() via love.mouse.getPosition()
 end
 
 function GameScreen:drawSquare()
