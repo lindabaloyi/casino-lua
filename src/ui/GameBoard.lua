@@ -1,5 +1,8 @@
 local Button = require("src.ui.Button")
+local Finder = require("src.shared.registry.Finder")
 local Trail = require("src.shared.actions.trail")
+local CreateTemp = require("src.shared.actions.createTemp")
+local Capture = require("src.shared.actions.capture")
 
 local GameBoard = {}
 GameBoard.__index = GameBoard
@@ -11,8 +14,6 @@ local HAND_Y = 280
 local CARD_OFFSET_Y = 60
 local TABLE_AREA_HEIGHT = 355
 
-local SQUARE_SIZE = 50
-
 function GameBoard:load()
     self.flashTimer = 0
     self.draggingIndex = nil
@@ -22,15 +23,13 @@ function GameBoard:load()
     self.handY = HAND_Y
     self.isDragging = false
     
-    self.square = {
-        x = 423,
-        y = 152,
-        size = SQUARE_SIZE,
-        color = {0, 0, 0}
-    }
-    self.squareDragging = false
-    self.squareOffsetX = 0
-    self.squareOffsetY = 0
+    Finder.register("looseCard", function(x, y, tableCards)
+        return self:findLooseCardAtPosition(x, y, tableCards)
+    end)
+    
+    Finder.register("tempStack", function(x, y, tableCards)
+        return self:findTempStackAtPosition(x, y, tableCards)
+    end)
 end
 
 function GameBoard:update(dt, gameState, mouseX, mouseY)
@@ -46,11 +45,6 @@ function GameBoard:update(dt, gameState, mouseX, mouseY)
             y = my - self.dragOffsetY
         }
     end
-    
-    if self.squareDragging and mx and my then
-        self.square.x = mx - self.squareOffsetX
-        self.square.y = my - self.squareOffsetY
-    end
 end
 
 function GameBoard:draw(gameState, mouseX, mouseY)
@@ -62,26 +56,11 @@ function GameBoard:draw(gameState, mouseX, mouseY)
 
     self:drawTableArea()
     self:drawTableCards(gameState)
-    self:drawSquare()
     self:drawHandArea(gameState.playerHand)
-
-    love.graphics.setColor(1, 1, 0)
-    love.graphics.setNewFont(12)
-    love.graphics.print("Square: " .. tostring(self.squareDragging), 10, 10)
-    love.graphics.print("Square Pos: " .. tostring(self.square.x) .. "," .. tostring(self.square.y), 10, 25)
 end
 
 function GameBoard:mousepressed(x, y, button, sm)
     self.flashTimer = 0.3
-    
-    if x >= self.square.x and x <= self.square.x + self.square.size and
-       y >= self.square.y and y <= self.square.y + self.square.size then
-        log("[HIT] Square")
-        self.squareDragging = true
-        self.squareOffsetX = x - self.square.x
-        self.squareOffsetY = y - self.square.y
-        return
-    end
     
     -- Check cards
     local hand = sm.gameState.playerHand
@@ -120,21 +99,52 @@ function GameBoard:mousereleased(x, y, button, sm)
         local hand = sm.gameState.playerHand
         local card = hand[self.draggingIndex]
         
-        -- Dropped on table area?
         if card and y >= 0 and y <= TABLE_AREA_HEIGHT then
-            local success, msg = Trail.execute(sm.gameState, card)
-            if success then
-                log("[Trail] " .. msg)
-                -- Rebuild card positions for remaining cards
+            local actionFailed = false
+            
+            -- Check for temp stack first (priority)
+            local tempStack = Finder.find("tempStack", x, y, sm.gameState.tableCards)
+            if tempStack then
+                local success, msg = Capture.execute(sm.gameState, tempStack, 0)
+                if success then
+                    log("[Capture] " .. msg)
+                else
+                    log("[Capture] Failed: " .. msg)
+                    actionFailed = true
+                end
+            else
+                -- Check for loose card
+                local looseCard = Finder.find("looseCard", x, y, sm.gameState.tableCards)
+                if looseCard then
+                    local success, msg = CreateTemp.execute(sm.gameState, {card = card, target = looseCard}, 0)
+                    if success then
+                        log("[CreateTemp] " .. msg)
+                    else
+                        log("[CreateTemp] Failed: " .. msg)
+                        actionFailed = true
+                    end
+                else
+                    -- Trail the card
+                    local success, msg = Trail.execute(sm.gameState, card)
+                    if success then
+                        log("[Trail] " .. msg)
+                    else
+                        log("[Trail] Failed: " .. msg)
+                        actionFailed = true
+                    end
+                end
+            end
+            
+            if actionFailed then
+                -- Snap back on failure
+                self.cardPositions[self.draggingIndex] = self:getDefaultCardPosition(self.draggingIndex, #hand)
+            else
+                -- Rebuild card positions on success
                 self.cardPositions = {}
                 local newHandSize = #sm.gameState.playerHand
                 for i = 1, newHandSize do
                     self.cardPositions[i] = self:getDefaultCardPosition(i, newHandSize)
                 end
-            else
-                log("[Trail] Failed: " .. msg)
-                -- Snap back to hand on failure
-                self.cardPositions[self.draggingIndex] = self:getDefaultCardPosition(self.draggingIndex, #hand)
             end
         else
             -- Not on table → snap back
@@ -142,19 +152,42 @@ function GameBoard:mousereleased(x, y, button, sm)
         end
     end
     
-    -- Reset all dragging flags
     self.isDragging = false
     self.draggingIndex = nil
-    self.squareDragging = false
 end
 
 function GameBoard:mousemove(x, y)
     -- Handled in update() via love.mouse.getPosition()
 end
 
-function GameBoard:drawSquare()
-    love.graphics.setColor(self.square.color[1], self.square.color[2], self.square.color[3])
-    love.graphics.rectangle("fill", self.square.x, self.square.y, self.square.size, self.square.size)
+function GameBoard:findLooseCardAtPosition(x, y, tableCards)
+    if not tableCards or #tableCards == 0 then return nil end
+    
+    for i, item in ipairs(tableCards) do
+        if not item.type then
+            local cardX = 50 + (i - 1) * (CARD_WIDTH + 10)
+            local cardY = 50
+            if x >= cardX and x <= cardX + CARD_WIDTH and y >= cardY and y <= cardY + CARD_HEIGHT then
+                return item
+            end
+        end
+    end
+    return nil
+end
+
+function GameBoard:findTempStackAtPosition(x, y, tableCards)
+    if not tableCards or #tableCards == 0 then return nil end
+    
+    for i, item in ipairs(tableCards) do
+        if item.type == "temp_stack" then
+            local cardX = 50 + (i - 1) * (CARD_WIDTH + 10)
+            local cardY = 50
+            if x >= cardX and x <= cardX + CARD_WIDTH and y >= cardY and y <= cardY + CARD_HEIGHT then
+                return item
+            end
+        end
+    end
+    return nil
 end
 
 function GameBoard:getDefaultCardPosition(index, numCards)
@@ -187,6 +220,22 @@ function GameBoard:drawTableArea()
     love.graphics.rectangle("fill", 0, 0, screenWidth, 355)
 end
 
+function GameBoard:drawTempStack(stack, x, y)
+    local overlap = CARD_WIDTH * 0.3
+
+    love.graphics.setColor(1, 1, 1)
+    stack.cards[1]:draw(x, y, CARD_WIDTH, CARD_HEIGHT)
+    stack.cards[2]:draw(x + overlap, y - overlap, CARD_WIDTH, CARD_HEIGHT)
+
+    local badgeX = x + CARD_WIDTH - 15
+    local badgeY = y + CARD_HEIGHT - 15
+    love.graphics.setColor(0, 0, 0, 0.7)
+    love.graphics.circle("fill", badgeX, badgeY, 14)
+    love.graphics.setColor(1, 1, 0)
+    love.graphics.setFont(love.graphics.newFont(12))
+    love.graphics.print(tostring(stack.value), badgeX - 6, badgeY - 6)
+end
+
 function GameBoard:drawTableCards(gameState)
     local tableCards = gameState.tableCards
     if not tableCards or #tableCards == 0 then
@@ -194,13 +243,18 @@ function GameBoard:drawTableCards(gameState)
     end
 
     local screenWidth = love.graphics.getWidth()
-    local totalWidth = #tableCards * CARD_WIDTH + (#tableCards - 1) * 10  -- spacing = 10
+    local totalWidth = #tableCards * CARD_WIDTH + (#tableCards - 1) * 10
     local startX = (screenWidth - totalWidth) / 2
     local startY = 50
 
-    for i, card in ipairs(tableCards) do
+    for i, item in ipairs(tableCards) do
         local x = startX + (i - 1) * (CARD_WIDTH + 10)
-        card:draw(x, startY, CARD_WIDTH, CARD_HEIGHT)
+        
+        if item.type == "temp_stack" then
+            self:drawTempStack(item, x, startY)
+        else
+            item:draw(x, startY, CARD_WIDTH, CARD_HEIGHT)
+        end
     end
 end
 
