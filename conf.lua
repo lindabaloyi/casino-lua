@@ -24,6 +24,8 @@ return {
         ["src.ui.render.BoardRenderer"] = true,
         ["src.shared.actions.trail"] = true,
         ["src.shared.actions.createTemp"] = true,
-        ["src.shared.actions.capture"] = true
+        ["src.shared.actions.capture"] = true,
+        ["src.shared.actions.captureOwn"] = true,
+        ["src.shared.actions.acceptTemp"] = true
     }
 }

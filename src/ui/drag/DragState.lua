@@ -4,11 +4,11 @@ DragState.__index = DragState
 function DragState:new()
     local instance = {}
     instance.flashTimer = 0
-    instance.isDragging = false
+    instance.dragging = false
     instance.draggingIndex = nil
     instance.dragOffsetX = 0
     instance.dragOffsetY = 0
-    instance.isDraggingTableCard = false
+    instance.draggingTableCard = false
     instance.draggingTableCardIndex = nil
     instance.tableCardOffsetX = 0
     instance.tableCardOffsetY = 0
@@ -16,28 +16,28 @@ function DragState:new()
 end
 
 function DragState:startDrag(index, offsetX, offsetY)
-    self.isDragging = true
+    self.dragging = true
     self.draggingIndex = index
     self.dragOffsetX = offsetX
     self.dragOffsetY = offsetY
 end
 
 function DragState:startTableCardDrag(index, offsetX, offsetY)
-    self.isDraggingTableCard = true
+    self.draggingTableCard = true
     self.draggingTableCardIndex = index
     self.tableCardOffsetX = offsetX
     self.tableCardOffsetY = offsetY
 end
 
 function DragState:endDrag()
-    self.isDragging = false
+    self.dragging = false
     self.draggingIndex = nil
     self.dragOffsetX = 0
     self.dragOffsetY = 0
 end
 
 function DragState:endTableCardDrag()
-    self.isDraggingTableCard = false
+    self.draggingTableCard = false
     self.draggingTableCardIndex = nil
     self.tableCardOffsetX = 0
     self.tableCardOffsetY = 0
@@ -62,7 +62,7 @@ function DragState:getFlashTimer()
 end
 
 function DragState:isDragging()
-    return self.isDragging
+    return self.dragging
 end
 
 function DragState:getDraggingIndex()
@@ -71,6 +71,26 @@ end
 
 function DragState:getDraggingTableCardIndex()
     return self.draggingTableCardIndex
+end
+
+function DragState:isDraggingTableCard()
+    return self.draggingTableCard
+end
+
+function DragState:getDragOffsetX()
+    return self.dragOffsetX
+end
+
+function DragState:getDragOffsetY()
+    return self.dragOffsetY
+end
+
+function DragState:getTableCardOffsetX()
+    return self.tableCardOffsetX
+end
+
+function DragState:getTableCardOffsetY()
+    return self.tableCardOffsetY
 end
 
 return DragState

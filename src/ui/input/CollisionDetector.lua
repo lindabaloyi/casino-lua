@@ -28,6 +28,8 @@ function CollisionDetector:findCollisionWithTable(dragX, dragY, tableCards)
         if self:checkCardCollision(dragX, dragY, cardX, startY) then
             if item.type == "temp_stack" then
                 return item, "tempStack"
+            elseif item.type == "build_stack" then
+                return item, "buildStack"
             else
                 return item, "looseCard"
             end
@@ -51,6 +53,8 @@ function CollisionDetector:findTableCardCollision(dragX, dragY, tableCards, excl
         if self:checkCardCollision(dragX, dragY, cardX, startY) then
             if item.type == "temp_stack" then
                 return item, "tempStack"
+            elseif item.type == "build_stack" then
+                return item, "buildStack"
             else
                 return item, "looseCard"
             end

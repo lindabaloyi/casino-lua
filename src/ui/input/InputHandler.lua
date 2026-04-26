@@ -2,16 +2,19 @@ local LayoutConfig = require("src.ui.layout.LayoutConfig")
 local Trail = require("src.shared.actions.trail")
 local CreateTemp = require("src.shared.actions.createTemp")
 local Capture = require("src.shared.actions.capture")
+local CaptureOwn = require("src.shared.actions.captureOwn")
+local AcceptTemp = require("src.shared.actions.acceptTemp")
 
 local InputHandler = {}
 InputHandler.__index = InputHandler
 
-function InputHandler:new(dragState, positionCalculator, hitDetector, collisionDetector)
+function InputHandler:new(dragState, positionCalculator, hitDetector, collisionDetector, boardRenderer)
     local instance = {}
     instance.dragState = dragState
     instance.positionCalculator = positionCalculator
     instance.hitDetector = hitDetector
     instance.collisionDetector = collisionDetector
+    instance.boardRenderer = boardRenderer
     return setmetatable(instance, self)
 end
 
@@ -48,10 +51,10 @@ function InputHandler:handleMousePressed(x, y, button, gameState)
 end
 
 function InputHandler:handleMouseReleased(x, y, button, gameState)
-    if self.dragState.isDragging and self.dragState.draggingIndex then
+    if self.dragState:isDragging() and self.dragState:getDraggingIndex() then
         local hand = gameState.playerHand
-        local card = hand[self.dragState.draggingIndex]
-        local draggedPos = self.positionCalculator:getCardPosition(self.dragState.draggingIndex)
+        local card = hand[self.dragState:getDraggingIndex()]
+        local draggedPos = self.positionCalculator:getCardPosition(self.dragState:getDraggingIndex())
 
         if card and y >= 0 and y <= LayoutConfig.TABLE_AREA_HEIGHT then
             local actionFailed = false
@@ -68,6 +71,14 @@ function InputHandler:handleMouseReleased(x, y, button, gameState)
                     log("[Capture] " .. msg)
                 else
                     log("[Capture] Failed: " .. msg)
+                    actionFailed = true
+                end
+            elseif targetType == "buildStack" then
+                local success, msg = CaptureOwn.execute(gameState, {card = card, target = target}, 0)
+                if success then
+                    log("[captureOwn] " .. msg)
+                else
+                    log("[captureOwn] Failed: " .. msg)
                     actionFailed = true
                 end
             elseif targetType == "looseCard" then
@@ -89,28 +100,24 @@ function InputHandler:handleMouseReleased(x, y, button, gameState)
             end
 
             if actionFailed then
-                self.positionCalculator:setCardPosition(
-                    self.dragState.draggingIndex,
-                    self.positionCalculator:getDefaultCardPosition(self.dragState.draggingIndex, #hand).x,
-                    self.positionCalculator:getDefaultCardPosition(self.dragState.draggingIndex, #hand).y
-                )
+                local idx = self.dragState:getDraggingIndex()
+                local defaultPos = self.positionCalculator:getDefaultCardPosition(idx, #hand)
+                self.positionCalculator:setCardPosition(idx, defaultPos.x, defaultPos.y)
             else
                 self.positionCalculator:clearPositions()
                 self.positionCalculator:recalculateHandPositions(#gameState.playerHand)
             end
         else
-            self.positionCalculator:setCardPosition(
-                self.dragState.draggingIndex,
-                self.positionCalculator:getDefaultCardPosition(self.dragState.draggingIndex, #hand).x,
-                self.positionCalculator:getDefaultCardPosition(self.dragState.draggingIndex, #hand).y
-            )
+            local idx = self.dragState:getDraggingIndex()
+            local defaultPos = self.positionCalculator:getDefaultCardPosition(idx, #hand)
+            self.positionCalculator:setCardPosition(idx, defaultPos.x, defaultPos.y)
         end
     end
 
-    if self.dragState.isDraggingTableCard and self.dragState.draggingTableCardIndex then
+    if self.dragState:isDraggingTableCard() and self.dragState:getDraggingTableCardIndex() then
         local tableCards = gameState.tableCards
-        local draggedCard = tableCards[self.dragState.draggingTableCardIndex]
-        local draggedPos = self.positionCalculator:getTableCardPosition(self.dragState.draggingTableCardIndex)
+        local draggedCard = tableCards[self.dragState:getDraggingTableCardIndex()]
+        local draggedPos = self.positionCalculator:getTableCardPosition(self.dragState:getDraggingTableCardIndex())
 
         if draggedCard and draggedPos then
             local actionFailed = false
@@ -118,7 +125,7 @@ function InputHandler:handleMouseReleased(x, y, button, gameState)
             log("[TableCard] draggedPos: " .. math.floor(draggedPos.x) .. "," .. math.floor(draggedPos.y))
 
             local target, targetType = self.collisionDetector:findTableCardCollision(
-                draggedPos.x, draggedPos.y, tableCards, self.dragState.draggingTableCardIndex)
+                draggedPos.x, draggedPos.y, tableCards, self.dragState:getDraggingTableCardIndex())
 
             log("[TableCard] result: " .. tostring(targetType) .. " -> " .. tostring(target))
 
@@ -139,11 +146,9 @@ function InputHandler:handleMouseReleased(x, y, button, gameState)
             end
 
             if actionFailed then
-                self.positionCalculator:setTableCardPosition(
-                    self.dragState.draggingTableCardIndex,
-                    self.positionCalculator:getDefaultTableCardPosition(self.dragState.draggingTableCardIndex, tableCards).x,
-                    self.positionCalculator:getDefaultTableCardPosition(self.dragState.draggingTableCardIndex, tableCards).y
-                )
+                local idx = self.dragState:getDraggingTableCardIndex()
+                local defaultPos = self.positionCalculator:getDefaultTableCardPosition(idx, tableCards)
+                self.positionCalculator:setTableCardPosition(idx, defaultPos.x, defaultPos.y)
             else
                 self.positionCalculator:clearPositions()
             end
@@ -155,24 +160,54 @@ function InputHandler:handleMouseReleased(x, y, button, gameState)
     self.dragState:endDrag()
 end
 
-function InputHandler:updatePositions()
-    local mx, my = love.mouse.getPosition()
-
-    if self.dragState.isDragging and self.dragState.draggingIndex and mx and my then
-        self.positionCalculator:setCardPosition(
-            self.dragState.draggingIndex,
-            mx - self.dragState.dragOffsetX,
-            my - self.dragState.dragOffsetY
-        )
+function InputHandler:handleDrag(x, y)
+    if self.dragState:isDragging() then
+        local idx = self.dragState:getDraggingIndex()
+        if idx then
+            self.positionCalculator:setCardPosition(
+                idx,
+                x - self.dragState:getDragOffsetX(),
+                y - self.dragState:getDragOffsetY()
+            )
+        end
     end
 
-    if self.dragState.isDraggingTableCard and self.dragState.draggingTableCardIndex and mx and my then
-        self.positionCalculator:setTableCardPosition(
-            self.dragState.draggingTableCardIndex,
-            mx - self.dragState.tableCardOffsetX,
-            my - self.dragState.tableCardOffsetY
-        )
+    if self.dragState:isDraggingTableCard() then
+        local idx = self.dragState:getDraggingTableCardIndex()
+        if idx then
+            self.positionCalculator:setTableCardPosition(
+                idx,
+                x - self.dragState:getTableCardOffsetX(),
+                y - self.dragState:getTableCardOffsetY()
+            )
+        end
     end
+end
+
+function InputHandler:handleAcceptButtonClick(x, y, gameState)
+    -- Check if clicked on any Accept button
+    if self.boardRenderer then
+        local acceptButtons = self.boardRenderer.acceptButtons
+        if acceptButtons then
+            for stackIndex, btn in pairs(acceptButtons) do
+                if x >= btn.x and x <= btn.x + btn.w and
+                   y >= btn.y and y <= btn.y + btn.h then
+                    log("[AcceptTemp] Clicked Accept button for stack at index: " .. stackIndex)
+
+                    -- Execute accept temp
+                    local success, msg = AcceptTemp.execute(gameState, { stackIndex = stackIndex }, 0)
+                    if success then
+                        log("[AcceptTemp] Success: " .. msg)
+                        return true
+                    else
+                        log("[AcceptTemp] Failed: " .. msg)
+                        return false, msg
+                    end
+                end
+            end
+        end
+    end
+    return false
 end
 
 return InputHandler
