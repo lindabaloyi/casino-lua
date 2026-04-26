@@ -37,6 +37,7 @@ end
 function ScreenManager:mousepressed(x, y, button)
     self.mouseX = x
     self.mouseY = y
+    log("[ScreenManager] mousepressed:" .. x .. "," .. y .. "," .. button)
     if self.currentScreen and self.currentScreen.mousepressed then
         self.currentScreen:mousepressed(x, y, button, self)
     end
@@ -47,6 +48,23 @@ function ScreenManager:mousemove(x, y)
     self.mouseY = y
     if self.currentScreen and self.currentScreen.mousemove then
         self.currentScreen:mousemove(x, y)
+    end
+end
+
+function ScreenManager:mousedragged(x, y, dx, dy)
+    self.mouseX = x
+    self.mouseY = y
+    if self.currentScreen and self.currentScreen.mousedragged then
+        self.currentScreen:mousedragged(x, y, dx, dy)
+    end
+end
+
+function ScreenManager:mousereleased(x, y, button)
+    self.mouseX = x
+    self.mouseY = y
+    log("[ScreenManager] mousereleased:" .. x .. "," .. y)
+    if self.currentScreen and self.currentScreen.mousereleased then
+        self.currentScreen:mousereleased(x, y, button, self)
     end
 end
 

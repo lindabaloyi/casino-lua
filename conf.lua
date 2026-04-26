@@ -1,7 +1,7 @@
 return {
     identity = "Casino",
     version = "1.0.0",
-    console = false,
+    console = true,
     window = {
         title = "Casino",
         width = 896,
