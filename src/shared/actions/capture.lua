@@ -3,6 +3,8 @@ local function execute(gameState, tempStack, playerIndex)
         return false, "No temp stack to capture"
     end
     
+    log("[Capture] stack value=" .. tostring(tempStack.value))
+    
     local player = gameState.players[playerIndex + 1]
     if not player then
         return false, "Invalid player index"

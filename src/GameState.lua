@@ -9,6 +9,11 @@ function GameState:new()
     obj.deck = nil
     obj.playerHand = {}
     obj.dealerHand = {}
+    obj.tableCards = {}
+    obj.players = {
+        { name = "Player", captures = {} },
+        { name = "Dealer", captures = {} }
+    }
     return setmetatable(obj, GameState)
 end
 

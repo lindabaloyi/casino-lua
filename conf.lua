@@ -17,7 +17,6 @@ return {
         ["src.ui.GameBoard"] = true,
         ["src.shared.actions.trail"] = true,
         ["src.shared.actions.createTemp"] = true,
-        ["src.shared.actions.capture"] = true,
-        ["src.shared.registry.Finder"] = true
+        ["src.shared.actions.capture"] = true
     }
 }

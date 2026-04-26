@@ -1,5 +1,4 @@
 local Button = require("src.ui.Button")
-local Finder = require("src.shared.registry.Finder")
 local Trail = require("src.shared.actions.trail")
 local CreateTemp = require("src.shared.actions.createTemp")
 local Capture = require("src.shared.actions.capture")
@@ -22,14 +21,6 @@ function GameBoard:load()
     self.cardPositions = {}
     self.handY = HAND_Y
     self.isDragging = false
-    
-    Finder.register("looseCard", function(x, y, tableCards)
-        return self:findLooseCardAtPosition(x, y, tableCards)
-    end)
-    
-    Finder.register("tempStack", function(x, y, tableCards)
-        return self:findTempStackAtPosition(x, y, tableCards)
-    end)
 end
 
 function GameBoard:update(dt, gameState, mouseX, mouseY)
@@ -98,48 +89,48 @@ function GameBoard:mousereleased(x, y, button, sm)
     if self.isDragging and self.draggingIndex then
         local hand = sm.gameState.playerHand
         local card = hand[self.draggingIndex]
+        local draggedPos = self.cardPositions[self.draggingIndex]
         
         if card and y >= 0 and y <= TABLE_AREA_HEIGHT then
             local actionFailed = false
             
-            -- Check for temp stack first (priority)
-            local tempStack = Finder.find("tempStack", x, y, sm.gameState.tableCards)
-            if tempStack then
-                local success, msg = Capture.execute(sm.gameState, tempStack, 0)
+            log("[Collision] draggedPos: " .. math.floor(draggedPos.x) .. "," .. math.floor(draggedPos.y))
+            
+            -- Check collision with table cards using dragged card position
+            local target, targetType = self:findCollisionWithTable(draggedPos.x, draggedPos.y, sm.gameState.tableCards)
+            
+            log("[Collision] result: " .. tostring(targetType) .. " -> " .. tostring(target))
+            
+            if targetType == "tempStack" then
+                local success, msg = Capture.execute(sm.gameState, target, 0)
                 if success then
                     log("[Capture] " .. msg)
                 else
                     log("[Capture] Failed: " .. msg)
                     actionFailed = true
                 end
-            else
-                -- Check for loose card
-                local looseCard = Finder.find("looseCard", x, y, sm.gameState.tableCards)
-                if looseCard then
-                    local success, msg = CreateTemp.execute(sm.gameState, {card = card, target = looseCard}, 0)
-                    if success then
-                        log("[CreateTemp] " .. msg)
-                    else
-                        log("[CreateTemp] Failed: " .. msg)
-                        actionFailed = true
-                    end
+            elseif targetType == "looseCard" then
+                local success, msg = CreateTemp.execute(sm.gameState, {card = card, target = target}, 0)
+                if success then
+                    log("[CreateTemp] " .. msg)
                 else
-                    -- Trail the card
-                    local success, msg = Trail.execute(sm.gameState, card)
-                    if success then
-                        log("[Trail] " .. msg)
-                    else
-                        log("[Trail] Failed: " .. msg)
-                        actionFailed = true
-                    end
+                    log("[CreateTemp] Failed: " .. msg)
+                    actionFailed = true
+                end
+            else
+                -- No collision - trail the card
+                local success, msg = Trail.execute(sm.gameState, card)
+                if success then
+                    log("[Trail] " .. msg)
+                else
+                    log("[Trail] Failed: " .. msg)
+                    actionFailed = true
                 end
             end
             
             if actionFailed then
-                -- Snap back on failure
                 self.cardPositions[self.draggingIndex] = self:getDefaultCardPosition(self.draggingIndex, #hand)
             else
-                -- Rebuild card positions on success
                 self.cardPositions = {}
                 local newHandSize = #sm.gameState.playerHand
                 for i = 1, newHandSize do
@@ -147,7 +138,6 @@ function GameBoard:mousereleased(x, y, button, sm)
                 end
             end
         else
-            -- Not on table → snap back
             self.cardPositions[self.draggingIndex] = self:getDefaultCardPosition(self.draggingIndex, #hand)
         end
     end
@@ -163,11 +153,15 @@ end
 function GameBoard:findLooseCardAtPosition(x, y, tableCards)
     if not tableCards or #tableCards == 0 then return nil end
     
+    local screenWidth = love.graphics.getWidth()
+    local totalWidth = #tableCards * CARD_WIDTH + (#tableCards - 1) * 10
+    local startX = (screenWidth - totalWidth) / 2
+    local startY = 50
+    
     for i, item in ipairs(tableCards) do
         if not item.type then
-            local cardX = 50 + (i - 1) * (CARD_WIDTH + 10)
-            local cardY = 50
-            if x >= cardX and x <= cardX + CARD_WIDTH and y >= cardY and y <= cardY + CARD_HEIGHT then
+            local cardX = startX + (i - 1) * (CARD_WIDTH + 10)
+            if x >= cardX and x <= cardX + CARD_WIDTH and y >= startY and y <= startY + CARD_HEIGHT then
                 return item
             end
         end
@@ -178,16 +172,49 @@ end
 function GameBoard:findTempStackAtPosition(x, y, tableCards)
     if not tableCards or #tableCards == 0 then return nil end
     
+    local screenWidth = love.graphics.getWidth()
+    local totalWidth = #tableCards * CARD_WIDTH + (#tableCards - 1) * 10
+    local startX = (screenWidth - totalWidth) / 2
+    local startY = 50
+    
     for i, item in ipairs(tableCards) do
         if item.type == "temp_stack" then
-            local cardX = 50 + (i - 1) * (CARD_WIDTH + 10)
-            local cardY = 50
-            if x >= cardX and x <= cardX + CARD_WIDTH and y >= cardY and y <= cardY + CARD_HEIGHT then
+            local cardX = startX + (i - 1) * (CARD_WIDTH + 10)
+            if x >= cardX and x <= cardX + CARD_WIDTH and y >= startY and y <= startY + CARD_HEIGHT then
                 return item
             end
         end
     end
     return nil
+end
+
+function GameBoard:checkCardCollision(x1, y1, x2, y2)
+    return x1 < x2 + CARD_WIDTH and
+           x1 + CARD_WIDTH > x2 and
+           y1 < y2 + CARD_HEIGHT and
+           y1 + CARD_HEIGHT > y2
+end
+
+function GameBoard:findCollisionWithTable(dragX, dragY, tableCards)
+    if not tableCards or #tableCards == 0 then return nil, nil end
+    
+    local screenWidth = love.graphics.getWidth()
+    local totalWidth = #tableCards * CARD_WIDTH + (#tableCards - 1) * 10
+    local startX = (screenWidth - totalWidth) / 2
+    local startY = 50
+    
+    for i, item in ipairs(tableCards) do
+        local cardX = startX + (i - 1) * (CARD_WIDTH + 10)
+        log("[Collision] check: " .. cardX .. "," .. startY .. " type=" .. (item.type or "loose"))
+        if self:checkCardCollision(dragX, dragY, cardX, startY) then
+            if item.type == "temp_stack" then
+                return item, "tempStack"
+            else
+                return item, "looseCard"
+            end
+        end
+    end
+    return nil, nil
 end
 
 function GameBoard:getDefaultCardPosition(index, numCards)
