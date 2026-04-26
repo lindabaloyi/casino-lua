@@ -1,86 +1,86 @@
-11:42:32 Game loaded
-11:42:35 [HIT] Card:2
-11:42:35 [mousereleased]
-11:42:35 [Collision] draggedPos: 334,198
-11:42:35 [Collision] result: nil -> nil
-11:42:35 [Trail] Card trailed
-11:42:36 [HIT] Card:4
-11:42:37 [mousereleased]
-11:42:37 [Collision] draggedPos: 420,59
-11:42:37 [Collision] check: 418,50 type=loose
-11:42:37 [Collision] result: looseCard -> table: 0x01adfff60bf0
-11:42:37 [CreateTemp] card=table: 0x01adfff60070 target=table: 0x01adfff60bf0
-11:42:37 [CreateTemp] Temp stack created with value 10
-11:54:34 [mousereleased]
-11:54:35 [HIT] Card:4
-11:54:36 [mousereleased]
-11:54:36 [Collision] draggedPos: 545,202
-11:54:36 [Collision] check: 418,50 type=temp_stack
-11:54:36 [Collision] result: nil -> nil
-11:54:36 [Trail] Card trailed
-11:54:38 [HIT] Card:3
-11:54:39 [mousereleased]
-11:54:39 [Collision] draggedPos: 387,48
-11:54:39 [Collision] check: 383,50 type=temp_stack
-11:54:39 [Collision] result: tempStack -> table: 0x01ad85f4cdd8
-11:54:39 [Capture] stack value=10
-11:54:39 [Capture] Captured temp stack with value 10
-11:54:44 [HIT] Card:1
-11:54:45 [mousereleased]
-11:54:45 [Collision] draggedPos: 431,56
-11:54:45 [Collision] check: 418,50 type=loose
-11:54:45 [Collision] result: looseCard -> table: 0x01adfff60880
-11:54:45 [CreateTemp] card=table: 0x01adfff60a90 target=table: 0x01adfff60880
-11:54:45 [CreateTemp] Temp stack created with value 9
-11:54:46 [HIT] Card:4
-11:54:47 [mousereleased]
-11:54:47 [Collision] draggedPos: 433,40
-11:54:47 [Collision] check: 418,50 type=temp_stack
-11:54:47 [Collision] result: tempStack -> table: 0x01ad85f3a2e8
-11:54:47 [Capture] stack value=9
-11:54:47 [Capture] Captured temp stack with value 9
-11:54:50 [HIT] Card:1
-11:54:50 [mousereleased]
-11:54:50 [Collision] draggedPos: 399,150
-11:54:50 [Collision] result: nil -> nil
-11:54:50 [Trail] Card trailed
-11:54:51 [HIT] Card:1
-11:54:52 [mousereleased]
-11:54:52 [Collision] draggedPos: 442,82
-11:54:52 [Collision] check: 418,50 type=loose
-11:54:52 [Collision] result: looseCard -> table: 0x01adfff60670
-11:54:52 [CreateTemp] card=table: 0x01adfff5f898 target=table: 0x01adfff60670
-11:54:52 [CreateTemp] Temp stack created with value 11
-11:54:52 [HIT] Card:3
-11:54:53 [mousereleased]
-11:54:53 [Collision] draggedPos: 455,51
-11:54:53 [Collision] check: 418,50 type=temp_stack
-11:54:53 [Collision] result: tempStack -> table: 0x01ad8606a8f0
-11:54:53 [Capture] stack value=11
-11:54:53 [Capture] Captured temp stack with value 11
-11:54:54 [HIT] Card:2
-11:54:55 [mousereleased]
-11:54:55 [Collision] draggedPos: 469,165
-11:54:55 [Collision] result: nil -> nil
-11:54:55 [Trail] Card trailed
-11:54:56 [HIT] Card:1
-11:54:57 [mousereleased]
-11:54:57 [Collision] draggedPos: 440,73
-11:54:57 [Collision] check: 418,50 type=loose
-11:54:57 [Collision] result: looseCard -> table: 0x01adfff5faa8
-11:54:57 [CreateTemp] card=table: 0x01adfff60f60 target=table: 0x01adfff5faa8
-11:54:57 [CreateTemp] Temp stack created with value 18
-11:55:01 [HIT] Card:2
-11:55:02 [mousereleased]
-11:55:02 [Collision] draggedPos: 552,177
-11:55:02 [Collision] check: 418,50 type=temp_stack
-11:55:02 [Collision] result: nil -> nil
-11:55:02 [Trail] Card trailed
-11:55:03 [HIT] Card:1
-11:55:03 [mousereleased]
-11:55:03 [Collision] draggedPos: 469,62
-11:55:03 [Collision] check: 383,50 type=temp_stack
-11:55:03 [Collision] check: 453,50 type=loose
-11:55:03 [Collision] result: looseCard -> table: 0x01adfff61b00
-11:55:03 [CreateTemp] card=table: 0x01adfff609e0 target=table: 0x01adfff61b00
-11:55:03 [CreateTemp] Temp stack created with value 20
+12:36:15 Game loaded
+12:36:18 [HIT] Card:4
+12:36:18 [mousereleased]
+12:36:18 [Collision] draggedPos: 378,163
+12:36:18 [Collision] result: nil -> nil
+12:36:18 [Trail] Card trailed
+12:36:19 [HIT] Card:3
+12:36:20 [mousereleased]
+12:36:20 [Collision] draggedPos: 484,195
+12:36:20 [Collision] check: 418,50 type=loose
+12:36:20 [Collision] result: nil -> nil
+12:36:20 [Trail] Card trailed
+12:36:24 [HIT] TableCard:2
+12:36:24 [mousereleased]
+12:36:24 [TableCard] draggedPos: 399,48
+12:36:24 [TableCard] result: looseCard -> table: 0x01df1ff4ee50
+12:36:24 [CreateTemp] card=table: 0x01df1ff4fbe0 target=table: 0x01df1ff4ee50 source=table
+12:36:24 [CreateTemp] Temp stack created with value 7
+12:36:26 [HIT] Card:5
+12:36:27 [mousereleased]
+12:36:27 [Collision] draggedPos: 529,219
+12:36:27 [Collision] check: 418,50 type=temp_stack
+12:36:27 [Collision] result: nil -> nil
+12:36:27 [Trail] Card trailed
+12:36:27 [HIT] Card:3
+12:36:28 [mousereleased]
+12:36:28 [Collision] draggedPos: 458,49
+12:36:28 [Collision] check: 383,50 type=temp_stack
+12:36:28 [Collision] check: 453,50 type=loose
+12:36:28 [Collision] result: looseCard -> table: 0x01df1ff4e888
+12:36:28 [CreateTemp] card=table: 0x01df1ff4f110 target=table: 0x01df1ff4e888 source=hand
+12:36:28 [CreateTemp] Temp stack created with value 10
+12:36:30 [HIT] Card:3
+12:36:30 [mousereleased]
+12:36:30 [Collision] draggedPos: 582,164
+12:36:30 [Collision] check: 383,50 type=temp_stack
+12:36:30 [Collision] check: 453,50 type=temp_stack
+12:36:30 [Collision] result: nil -> nil
+12:36:30 [Trail] Card trailed
+12:36:32 [HIT] Card:1
+12:36:32 [mousereleased]
+12:36:32 [Collision] draggedPos: 500,81
+12:36:32 [Collision] check: 348,50 type=temp_stack
+12:36:32 [Collision] check: 418,50 type=temp_stack
+12:36:32 [Collision] check: 488,50 type=loose
+12:36:32 [Collision] result: looseCard -> table: 0x01df1ff4e6a0
+12:36:32 [CreateTemp] card=table: 0x01df1ff4e458 target=table: 0x01df1ff4e6a0 source=hand
+12:36:32 [CreateTemp] Temp stack created with value 5
+12:36:35 [HIT] Card:2
+12:36:36 [mousereleased]
+12:36:36 [Collision] draggedPos: 605,141
+12:36:36 [Collision] check: 348,50 type=temp_stack
+12:36:36 [Collision] check: 418,50 type=temp_stack
+12:36:36 [Collision] check: 488,50 type=temp_stack
+12:36:36 [Collision] result: nil -> nil
+12:36:36 [Trail] Card trailed
+12:36:37 [HIT] Card:1
+12:36:37 [mousereleased]
+12:36:37 [Collision] draggedPos: 555,61
+12:36:37 [Collision] check: 313,50 type=temp_stack
+12:36:37 [Collision] check: 383,50 type=temp_stack
+12:36:37 [Collision] check: 453,50 type=temp_stack
+12:36:37 [Collision] check: 523,50 type=loose
+12:36:37 [Collision] result: looseCard -> table: 0x01df1ff4f870
+12:36:37 [CreateTemp] card=table: 0x01df1ff4e540 target=table: 0x01df1ff4f870 source=hand
+12:36:37 [CreateTemp] Temp stack created with value 10
+12:36:39 [HIT] Card:1
+12:36:39 [mousereleased]
+12:36:39 [Collision] draggedPos: 621,92
+12:36:39 [Collision] check: 313,50 type=temp_stack
+12:36:39 [Collision] check: 383,50 type=temp_stack
+12:36:39 [Collision] check: 453,50 type=temp_stack
+12:36:39 [Collision] check: 523,50 type=temp_stack
+12:36:39 [Collision] result: nil -> nil
+12:36:39 [Trail] Card trailed
+12:36:40 [HIT] Card:1
+12:36:41 [mousereleased]
+12:36:41 [Collision] draggedPos: 565,57
+12:36:41 [Collision] check: 278,50 type=temp_stack
+12:36:41 [Collision] check: 348,50 type=temp_stack
+12:36:41 [Collision] check: 418,50 type=temp_stack
+12:36:41 [Collision] check: 488,50 type=temp_stack
+12:36:41 [Collision] check: 558,50 type=loose
+12:36:41 [Collision] result: looseCard -> table: 0x01df1ff50210
+12:36:41 [CreateTemp] card=table: 0x01df1ff4f2f0 target=table: 0x01df1ff50210 source=hand
+12:36:41 [CreateTemp] Temp stack created with value 20
