@@ -1,17 +1,19 @@
 local Button = require("src.ui.Button")
+local Trail = require("src.shared.actions.trail")
 
-local GameScreen = {}
-GameScreen.__index = GameScreen
+local GameBoard = {}
+GameBoard.__index = GameBoard
 
 local CARD_WIDTH = 60
 local CARD_HEIGHT = 90
 local CARD_OVERLAP = 18
 local HAND_Y = 280
 local CARD_OFFSET_Y = 60
+local TABLE_AREA_HEIGHT = 355
 
 local SQUARE_SIZE = 50
 
-function GameScreen:load()
+function GameBoard:load()
     self.flashTimer = 0
     self.draggingIndex = nil
     self.dragOffsetX = 0
@@ -31,7 +33,7 @@ function GameScreen:load()
     self.squareOffsetY = 0
 end
 
-function GameScreen:update(dt, gameState, mouseX, mouseY)
+function GameBoard:update(dt, gameState, mouseX, mouseY)
     if self.flashTimer > 0 then
         self.flashTimer = self.flashTimer - dt
     end
@@ -51,24 +53,25 @@ function GameScreen:update(dt, gameState, mouseX, mouseY)
     end
 end
 
-function GameScreen:draw(gameState, mouseX, mouseY)
+function GameBoard:draw(gameState, mouseX, mouseY)
     if self.flashTimer > 0 then
         love.graphics.setColor(1, 0, 0, 0.5)
         love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
         love.graphics.setColor(1, 1, 1)
     end
-    
+
     self:drawTableArea()
+    self:drawTableCards(gameState)
     self:drawSquare()
     self:drawHandArea(gameState.playerHand)
-    
+
     love.graphics.setColor(1, 1, 0)
     love.graphics.setNewFont(12)
     love.graphics.print("Square: " .. tostring(self.squareDragging), 10, 10)
     love.graphics.print("Square Pos: " .. tostring(self.square.x) .. "," .. tostring(self.square.y), 10, 25)
 end
 
-function GameScreen:mousepressed(x, y, button, sm)
+function GameBoard:mousepressed(x, y, button, sm)
     self.flashTimer = 0.3
     
     if x >= self.square.x and x <= self.square.x + self.square.size and
@@ -106,17 +109,37 @@ function GameScreen:mousepressed(x, y, button, sm)
     end
 end
 
-function GameScreen:mousedragged(x, y, dx, dy)
+function GameBoard:mousedragged(x, y, dx, dy)
     -- Handled in update() via love.mouse.getPosition()
 end
 
-function GameScreen:mousereleased(x, y, button, sm)
+function GameBoard:mousereleased(x, y, button, sm)
     log("[mousereleased]")
     
-    -- Snap card back to default position in hand
-    if self.draggingIndex then
+    if self.isDragging and self.draggingIndex then
         local hand = sm.gameState.playerHand
-        self.cardPositions[self.draggingIndex] = self:getDefaultCardPosition(self.draggingIndex, #hand)
+        local card = hand[self.draggingIndex]
+        
+        -- Dropped on table area?
+        if card and y >= 0 and y <= TABLE_AREA_HEIGHT then
+            local success, msg = Trail.execute(sm.gameState, card)
+            if success then
+                log("[Trail] " .. msg)
+                -- Rebuild card positions for remaining cards
+                self.cardPositions = {}
+                local newHandSize = #sm.gameState.playerHand
+                for i = 1, newHandSize do
+                    self.cardPositions[i] = self:getDefaultCardPosition(i, newHandSize)
+                end
+            else
+                log("[Trail] Failed: " .. msg)
+                -- Snap back to hand on failure
+                self.cardPositions[self.draggingIndex] = self:getDefaultCardPosition(self.draggingIndex, #hand)
+            end
+        else
+            -- Not on table → snap back
+            self.cardPositions[self.draggingIndex] = self:getDefaultCardPosition(self.draggingIndex, #hand)
+        end
     end
     
     -- Reset all dragging flags
@@ -125,16 +148,16 @@ function GameScreen:mousereleased(x, y, button, sm)
     self.squareDragging = false
 end
 
-function GameScreen:mousemove(x, y)
+function GameBoard:mousemove(x, y)
     -- Handled in update() via love.mouse.getPosition()
 end
 
-function GameScreen:drawSquare()
+function GameBoard:drawSquare()
     love.graphics.setColor(self.square.color[1], self.square.color[2], self.square.color[3])
     love.graphics.rectangle("fill", self.square.x, self.square.y, self.square.size, self.square.size)
 end
 
-function GameScreen:getDefaultCardPosition(index, numCards)
+function GameBoard:getDefaultCardPosition(index, numCards)
     local screenWidth = love.graphics.getWidth()
     local handWidth = CARD_WIDTH + (numCards - 1) * (CARD_WIDTH - CARD_OVERLAP)
     local baseX = (screenWidth - handWidth) / 2
@@ -143,7 +166,7 @@ function GameScreen:getDefaultCardPosition(index, numCards)
     return { x = cardX, y = cardY }
 end
 
-function GameScreen:getCardAtPosition(mx, my, hand)
+function GameBoard:getCardAtPosition(mx, my, hand)
     local numCards = #hand
     if numCards == 0 then return nil end
     
@@ -158,17 +181,34 @@ function GameScreen:getCardAtPosition(mx, my, hand)
     return nil
 end
 
-function GameScreen:drawTableArea()
+function GameBoard:drawTableArea()
     local screenWidth = love.graphics.getWidth()
     love.graphics.setColor(46/255, 125/255, 50/255)
     love.graphics.rectangle("fill", 0, 0, screenWidth, 355)
 end
 
-function GameScreen:drawHandArea(hand)
-    -- Draw background for hand area
+function GameBoard:drawTableCards(gameState)
+    local tableCards = gameState.tableCards
+    if not tableCards or #tableCards == 0 then
+        return
+    end
+
+    local screenWidth = love.graphics.getWidth()
+    local totalWidth = #tableCards * CARD_WIDTH + (#tableCards - 1) * 10  -- spacing = 10
+    local startX = (screenWidth - totalWidth) / 2
+    local startY = 50
+
+    for i, card in ipairs(tableCards) do
+        local x = startX + (i - 1) * (CARD_WIDTH + 10)
+        card:draw(x, startY, CARD_WIDTH, CARD_HEIGHT)
+    end
+end
+
+function GameBoard:drawHandArea(hand)
+    -- Draw background for hand area covering the full card height
     love.graphics.setColor(46/255, 125/255, 50/255)
     local screenWidth = love.graphics.getWidth()
-    love.graphics.rectangle("fill", 0, self.handY, screenWidth, 60)
+    love.graphics.rectangle("fill", 0, self.handY, screenWidth, CARD_OFFSET_Y + CARD_HEIGHT)
     
     local numCards = #hand
     if numCards == 0 then return end
@@ -190,4 +230,4 @@ function GameScreen:drawHandArea(hand)
     end
 end
 
-return GameScreen
+return GameBoard

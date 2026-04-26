@@ -17,7 +17,7 @@ function ScreenManager:switch(screenName, ...)
         self.currentScreen = require("src.ui.HomeScreen")
     elseif screenName == "game" then
         self.gameState:start()
-        self.currentScreen = require("src.ui.GameScreen")
+        self.currentScreen = require("src.ui.GameBoard")
     end
     self.currentScreen:load(...)
 end

@@ -17,6 +17,7 @@ function GameState:start()
     self.deck:shuffle()
     self.playerHand = self.deck:deal(10)
     self.dealerHand = self.deck:deal(10)
+    self.tableCards = {}
     Deck:sortByValue(self.playerHand)
     Deck:sortByValue(self.dealerHand)
 end

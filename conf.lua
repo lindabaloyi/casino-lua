@@ -14,6 +14,7 @@ return {
         ["src.ScreenManager"] = true,
         ["src.ui.Button"] = true,
         ["src.ui.HomeScreen"] = true,
-        ["src.ui.GameScreen"] = true
+        ["src.ui.GameBoard"] = true,
+        ["src.shared.actions.trail"] = true
     }
 }
