@@ -1,3 +1,4 @@
+local json = require("dkjson")
 local LayoutConfig = require("src.ui.layout.LayoutConfig")
 local PositionCalculator = require("src.ui.layout.PositionCalculator")
 local DragState = require("src.ui.drag.DragState")
@@ -31,6 +32,20 @@ function GameBoard:load()
     )
 
     self.currentPlayerIndex = 0  -- Player 0 (human player)
+
+    -- Multiplayer state
+    self.multiplayer = false
+    self.network = nil
+    self.roomId = nil
+    self.playerIndex = 0
+end
+
+function GameBoard:startMultiplayer(roomId, playerIndex, network)
+    self.multiplayer = true
+    self.roomId = roomId
+    self.playerIndex = playerIndex
+    self.network = network
+    log("Started multiplayer: room " .. roomId .. ", player " .. playerIndex)
 end
 
 function GameBoard:update(dt, gameState, mouseX, mouseY)
@@ -40,6 +55,20 @@ function GameBoard:update(dt, gameState, mouseX, mouseY)
         local mx, my = love.mouse.getPosition()
         if mx and my then
             self.inputHandler:handleDrag(mx, my)
+        end
+    end
+
+    if self.multiplayer and self.network then
+        self.network:update()
+        local msg = self.network:getNextMessage()
+        while msg do
+            log("GameBoard received: " .. json.encode(msg))
+
+            if msg.type == "chat" then
+                log("Player " .. msg.playerId .. " says: " .. msg.message)
+            end
+
+            msg = self.network:getNextMessage()
         end
     end
 end

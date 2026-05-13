@@ -6,18 +6,28 @@ ScreenManager.__index = ScreenManager
 function ScreenManager:new()
     local obj = {}
     obj.currentScreen = nil
+    obj.screens = {}
     obj.gameState = GameState:new()
     obj.mouseX = 0
     obj.mouseY = 0
     return setmetatable(obj, ScreenManager)
 end
 
+function ScreenManager:addScreen(name, screen)
+    self.screens[name] = screen
+end
+
 function ScreenManager:switch(screenName, ...)
     if screenName == "home" then
         self.currentScreen = require("src.ui.HomeScreen")
     elseif screenName == "game" then
-        self.gameState:start()
-        self.currentScreen = require("src.ui.GameBoard")
+        if not self.screens["game"] then
+            self.gameState:start()
+            self.screens["game"] = require("src.ui.GameBoard")
+        end
+        self.currentScreen = self.screens["game"]
+    elseif self.screens[screenName] then
+        self.currentScreen = self.screens[screenName]
     end
     self.currentScreen:load(...)
 end
@@ -68,6 +78,10 @@ end
 
 function ScreenManager:getMousePosition()
     return self.mouseX, self.mouseY
+end
+
+function ScreenManager:getScreen(name)
+    return self.screens[name]
 end
 
 return ScreenManager

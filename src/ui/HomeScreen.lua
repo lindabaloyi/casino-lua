@@ -10,6 +10,7 @@ function HomeScreen:load()
     self.titleFont = 48
     
     self.playButton = Button:new(270, 150, 100, 40, "PLAY")
+    self.multiplayerButton = Button:new(270, 220, 140, 40, "MULTIPLAYER")
 end
 
 function HomeScreen:update(dt, gameState, mouseX, mouseY)
@@ -30,11 +31,29 @@ function HomeScreen:draw(gameState, mouseX, mouseY)
         {100/255, 100/255, 100/255, 255},
         {218/255, 165/255, 32/255, 255}
     )
+
+    self.multiplayerButton:draw(
+        mouseX,
+        mouseY,
+        {255/255, 215/255, 0/255, 255},
+        {100/255, 100/255, 100/255, 255},
+        {218/255, 165/255, 32/255, 255}
+    )
 end
 
 function HomeScreen:mousepressed(x, y, button, screenManager)
     if self.playButton:clicked(x, y) then
         screenManager:switch("game")
+    elseif self.multiplayerButton:clicked(x, y) then
+        local NetworkManager = require("src.NetworkManager")
+        -- For same machine: "127.0.0.1"
+        -- For different machine: use server's IP address (e.g., "192.168.1.100")
+        local host = "127.0.0.1"  -- Change to server IP for network play
+        local network = NetworkManager:new(host, 12345)
+        local LobbyScreen = require("src.ui.LobbyScreen")
+        local lobby = LobbyScreen:new(screenManager, network)
+        screenManager:addScreen("lobby", lobby)
+        screenManager:switch("lobby")
     end
 end
 

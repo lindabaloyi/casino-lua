@@ -12,9 +12,11 @@ return {
     modules = {
         ["src.GameState"] = true,
         ["src.ScreenManager"] = true,
+        ["src.NetworkManager"] = true,
         ["src.ui.Button"] = true,
         ["src.ui.HomeScreen"] = true,
         ["src.ui.GameBoard"] = true,
+        ["src.ui.LobbyScreen"] = true,
         ["src.ui.layout.LayoutConfig"] = true,
         ["src.ui.layout.PositionCalculator"] = true,
         ["src.ui.drag.DragState"] = true,
