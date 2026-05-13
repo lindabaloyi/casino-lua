@@ -18,7 +18,7 @@ function love.load()
     math.randomseed(os.time())
     
     screenManager = ScreenManager:new()
-    screenManager:switch("game")
+    screenManager:switch("home")
 end
 
 function love.update(dt)
