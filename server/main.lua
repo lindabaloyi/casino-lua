@@ -1,164 +1,185 @@
-local socket = require("socket")
-local json = require("dkjson")
+print("=== SERVER MAIN.LUA LOADED ===")
 
-local clients = {}
-local rooms = {}
-local nextPlayerId = 1
-local nextRoomId = 1
+local json = require("dkjson")
+local socket_ok, socket = pcall(require, "socket")
+if not socket_ok then
+    print("ERROR: LuaSocket not found. Make sure socket.lua and DLLs are in the right path.")
+    os.exit(1)
+end
+print("LuaSocket loaded successfully")
 
 local PORT = 12345
 
-local server = nil
-local running = true
+local clients = {}
+local lobby = {}
+local games = {}
+local nextPlayerId = 1
+local nextGameId = 1
 
-function love.load()
-    print("Attempting to bind server to port " .. PORT .. "...")
-    local bind_result, bind_err = pcall(function()
-        server = socket.bind("0.0.0.0", PORT)
-        server:settimeout(0)
-    end)
+local function sendToClient(pid, msg)
+    local c = clients[pid]
+    if not c or not c.sock then
+        print("sendToClient: client " .. tostring(pid) .. " not found")
+        return false
+    end
+    local json_str = json.encode(msg)
+    print("Sending to " .. pid .. ": " .. json_str)
+    local ok, err = c.sock:send(json_str .. "\n")
+    if not ok then
+        print("Send error: " .. tostring(err))
+        return false
+    end
+    return true
+end
 
-    if not bind_result then
-        print("ERROR: Failed to bind server: " .. tostring(bind_err))
-    else
-        print("Server started on port " .. PORT)
-        print("Server listening on all interfaces (0.0.0.0)")
+local function broadcastToGame(gameId, msg)
+    local game = games[gameId]
+    if not game then return false end
+    for _, pid in ipairs(game.players) do
+        sendToClient(pid, msg)
+    end
+    return true
+end
+
+local function createInitialGameState()
+    print("Creating initial game state")
+    local suits = {"hearts","diamonds","clubs","spades"}
+    local ranks = {"A","2","3","4","5","6","7","8","9","10","J","Q","K"}
+    local deck = {}
+    for _,s in ipairs(suits) do
+        for i,r in ipairs(ranks) do
+            table.insert(deck, {suit=s, rank=r, value=i})
+        end
+    end
+    for i = #deck, 2, -1 do
+        local j = math.random(i)
+        deck[i], deck[j] = deck[j], deck[i]
+    end
+    local tableCards = {}
+    for i=1,4 do table.insert(tableCards, table.remove(deck)) end
+    local playerHands = { {}, {} }
+    for i=1,10 do
+        table.insert(playerHands[1], table.remove(deck))
+        table.insert(playerHands[2], table.remove(deck))
+    end
+    return {
+        players = {
+            { hand = playerHands[1], captures = {} },
+            { hand = playerHands[2], captures = {} }
+        },
+        tableCards = tableCards,
+        currentTurn = 1
+    }
+end
+
+local function startGame(p1, p2)
+    print(string.format("startGame called with %d and %d", p1, p2))
+    local gameId = nextGameId
+    nextGameId = nextGameId + 1
+    local state = createInitialGameState()
+    games[gameId] = {
+        players = {p1, p2},
+        state = state,
+        turn = p1
+    }
+    local success = true
+    for idx, pid in ipairs({p1, p2}) do
+        local msg = {
+            type = "game_start",
+            gameId = gameId,
+            playerIndex = idx,
+            state = state
+        }
+        if not sendToClient(pid, msg) then
+            print("Failed to send game_start to player " .. pid)
+            success = false
+            break
+        end
+    end
+    if not success then
+        games[gameId] = nil
+        return false
+    end
+    print("Game " .. gameId .. " started successfully")
+    return true
+end
+
+local function checkLobby()
+    local waiting = {}
+    for pid,_ in pairs(lobby) do
+        table.insert(waiting, pid)
+        if #waiting == 2 then break end
+    end
+    print("checkLobby: waiting players = " .. table.concat(waiting, ","))
+    if #waiting == 2 then
+        lobby[waiting[1]] = nil
+        lobby[waiting[2]] = nil
+        local ok, err = pcall(startGame, waiting[1], waiting[2])
+        if not ok then
+            print("Error starting game: " .. tostring(err))
+            lobby[waiting[1]] = true
+            lobby[waiting[2]] = true
+        end
     end
 end
 
-function love.update(dt)
-    local newClient = server:accept()
-    if newClient then
-        newClient:settimeout(0)
+local function processMessage(pid, msg)
+    print("Received from " .. pid .. ": " .. json.encode(msg))
+    if msg.type == "join_lobby" then
+        if not lobby[pid] then
+            lobby[pid] = true
+            print("Player " .. pid .. " joined lobby")
+            sendToClient(pid, {type = "room_joined", message = "Waiting for opponent"})
+            checkLobby()
+        end
+    elseif msg.type == "game_action" then
+        local game = games[msg.gameId]
+        if not game then return end
+        if game.turn ~= pid then
+            sendToClient(pid, {type = "error", message = "Not your turn"})
+            return
+        end
+        local other = (game.players[1] == pid) and game.players[2] or game.players[1]
+        game.turn = other
+        broadcastToGame(msg.gameId, {type = "state_update", state = game.state, turn = game.turn})
+    end
+end
+
+print("Attempting to bind to 127.0.0.1:" .. PORT)
+local server = socket.bind("127.0.0.1", PORT)
+if not server then
+    print("ERROR: Could not bind to port " .. PORT .. ". Is it already in use?")
+    os.exit(1)
+end
+server:settimeout(0)
+print("=== Server listening on 127.0.0.1:" .. PORT .. " ===")
+
+while true do
+    local client = server:accept()
+    if client then
+        client:settimeout(0)
         local pid = nextPlayerId
         nextPlayerId = nextPlayerId + 1
-
-        print("New connection accepted, assigning player ID: " .. pid)
-
-        clients[pid] = {
-            id = pid,
-            socket = newClient,
-            status = "connected",
-            roomId = nil
-        }
-
-        sendToClient(clients[pid], {type = "connected", playerId = pid})
-        print("Player " .. pid .. " connected - sent welcome message")
+        clients[pid] = {sock = client, name = "Player"..pid}
+        sendToClient(pid, {type = "connected", playerId = pid})
+        print("Player " .. pid .. " connected")
     end
 
-    for pid, player in pairs(clients) do
-        if not player.socket then
-            print("WARNING: Player " .. pid .. " has no socket, skipping")
-            goto continue
-        end
-
-        local line, err = player.socket:receive()
+    for pid, data in pairs(clients) do
+        local line, err = data.sock:receive()
         if line then
-            print("Received from player " .. pid .. ": " .. line)
             local msg = json.decode(line)
             if msg then
-                print("Player " .. pid .. " sent type: " .. tostring(msg.type))
-
-                if msg.type == "join_lobby" then
-                    player.status = "waiting"
-                    print("Player " .. pid .. " joined lobby - attempting to match")
-                    matchPlayers()
-                elseif msg.type == "chat" then
-                    print("Chat message from player " .. pid)
-                    local room = rooms[player.roomId]
-                    if room then
-                        broadcastToRoom(player.roomId, {
-                            type = "chat",
-                            playerId = pid,
-                            message = msg.message
-                        })
-                    else
-                        print("Player " .. pid .. " not in a room")
-                    end
-                end
+                xpcall(function() processMessage(pid, msg) end, function(e)
+                    print("Error in processMessage: " .. tostring(e))
+                end)
             end
         elseif err and err ~= "timeout" then
-            print("Player " .. pid .. " disconnected: " .. err)
-            player.socket:close()
+            print("Player " .. pid .. " disconnected: " .. tostring(err))
+            data.sock:close()
             clients[pid] = nil
-        end
-
-        ::continue::
-    end
-end
-
-function love.draw()
-    love.graphics.clear()
-    love.graphics.setColor(1, 1, 1)
-    love.graphics.print("Casino Server Running on port " .. PORT, 10, 10)
-    love.graphics.print("Players connected: " .. nextPlayerId - 1, 10, 30)
-end
-
-function sendToClient(player, msg)
-    if not player or not player.socket then
-        print("ERROR: sendToClient - invalid player or socket is nil")
-        return
-    end
-    local data = json.encode(msg) .. "\n"
-    local success, err = pcall(function() player.socket:send(data) end)
-    if not success then
-        print("ERROR: Failed to send to player: " .. tostring(err))
-    end
-end
-
-function broadcastToRoom(roomId, msg)
-    if not rooms[roomId] then
-        print("ERROR: Room " .. roomId .. " does not exist")
-        return
-    end
-    print("Broadcasting to room " .. roomId .. ": " .. json.encode(msg))
-    for _, player in ipairs(rooms[roomId].players) do
-        sendToClient(player, msg)
-    end
-end
-
-function matchPlayers()
-    local waiting = {}
-    print("Matching players - checking " .. #clients .. " clients")
-    for pid, player in pairs(clients) do
-        print("Player " .. pid .. " status: " .. tostring(player.status))
-        if player.status == "waiting" then
-            table.insert(waiting, player)
+            lobby[pid] = nil
         end
     end
-
-    print("Players waiting: " .. #waiting)
-
-    if #waiting >= 2 then
-        local roomId = nextRoomId
-        nextRoomId = nextRoomId + 1
-
-        print("Creating room " .. roomId .. " with players " .. waiting[1].id .. " and " .. waiting[2].id)
-
-        rooms[roomId] = {
-            players = {waiting[1], waiting[2]},
-            status = "matched"
-        }
-
-        waiting[1].status = "in_room"
-        waiting[1].roomId = roomId
-        waiting[2].status = "in_room"
-        waiting[2].roomId = roomId
-
-        local roomMsg = {
-            type = "room_joined",
-            roomId = roomId,
-            playerIndex = 1,
-            opponentId = waiting[2].id
-        }
-        print("Sending room_joined to player 1")
-        sendToClient(waiting[1], roomMsg)
-
-        roomMsg.playerIndex = 2
-        roomMsg.opponentId = waiting[1].id
-        print("Sending room_joined to player 2")
-        sendToClient(waiting[2], roomMsg)
-
-        print("Room " .. roomId .. " created: Player " .. waiting[1].id .. " vs Player " .. waiting[2].id)
-    end
+    love.timer.sleep(0.01)
 end

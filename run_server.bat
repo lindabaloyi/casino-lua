@@ -1,4 +1,5 @@
 @echo off
+cd /d "%~dp0"
 echo Starting Casino Server...
-"C:\Program Files\LOVE\love.exe" server
+"love" server --console
 pause
